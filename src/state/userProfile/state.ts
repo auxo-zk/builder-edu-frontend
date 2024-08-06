@@ -2,7 +2,7 @@ import { addressWallet, getProfile, UserProfile } from '@auxo-dev/frontend-commo
 import { Atom, atom, useAtom } from 'jotai';
 import { loadable } from 'jotai/utils';
 
-const addressTest = 'B62qmRKcdXqHe1SxukHQtWUHyMX3NMGCkvHnHao3VsdoBMNRDkQq6na';
+export const addressTest = 'B62qmRKcdXqHe1SxukHQtWUHyMX3NMGCkvHnHao3VsdoBMNRDkQq6na';
 const userProfile = atom<Promise<UserProfile>>(async (get) => {
     const _addressWallet = get(addressWallet);
 

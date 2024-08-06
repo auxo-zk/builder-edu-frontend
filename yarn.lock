@@ -15,10 +15,10 @@
     "@jridgewell/gen-mapping" "^0.3.5"
     "@jridgewell/trace-mapping" "^0.3.24"
 
-"@auxo-dev/frontend-common@^0.0.18":
-  version "0.0.18"
-  resolved "https://registry.yarnpkg.com/@auxo-dev/frontend-common/-/frontend-common-0.0.18.tgz#f9e689afed232db898e2a9a06455967b622d4dfa"
-  integrity sha512-b+0yiUZnhxscsyJVdF6NaMcnokhJ3fCeD1zmSlT05p8lL48DKUdukNnViw+uTpGZB6jugzziVbTEuAUUQT2OqA==
+"@auxo-dev/frontend-common@^0.0.21":
+  version "0.0.21"
+  resolved "https://registry.yarnpkg.com/@auxo-dev/frontend-common/-/frontend-common-0.0.21.tgz#8ad74d15eb83a65c654ebe6e523e8b22dc29c29b"
+  integrity sha512-HIMubObAqoe1xJRkgkbsKKebJ+z5eWemNXvoSnFoiEVB0HUo7M4BTh87gsqRe4AubSPxtNfOjI3Bkgvi2ZA9dw==
 
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.24.7":
   version "7.24.7"
@@ -160,7 +160,7 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.24.7"
 
-"@babel/runtime@^7.12.5", "@babel/runtime@^7.18.3", "@babel/runtime@^7.19.4", "@babel/runtime@^7.21.0", "@babel/runtime@^7.23.2", "@babel/runtime@^7.23.9", "@babel/runtime@^7.5.5", "@babel/runtime@^7.8.7":
+"@babel/runtime@^7.12.5", "@babel/runtime@^7.18.3", "@babel/runtime@^7.19.4", "@babel/runtime@^7.21.0", "@babel/runtime@^7.23.2", "@babel/runtime@^7.23.9", "@babel/runtime@^7.25.0", "@babel/runtime@^7.5.5", "@babel/runtime@^7.8.7":
   version "7.25.0"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.25.0.tgz#3af9a91c1b739c569d5d80cc917280919c544ecb"
   integrity sha512-7dRy4DwXwtzBrPbZflqxnvfxLF8kdZXPkhymtDeFoFqE6ldzjQFgYTtYIFARcLEYDrqfBfYcZt1WqFxRoyC9Rw==
@@ -857,7 +857,7 @@
     csstype "^3.1.3"
     prop-types "^15.8.1"
 
-"@mui/system@^5.16.6":
+"@mui/system@^5.16.5", "@mui/system@^5.16.6":
   version "5.16.6"
   resolved "https://registry.yarnpkg.com/@mui/system/-/system-5.16.6.tgz#2dabe63d2e45816ce611c40d6e3f79b9c2ccbcd7"
   integrity sha512-5xgyJjBIMPw8HIaZpfbGAaFYPwImQn7Nyh+wwKWhvkoIeDosQ1ZMVrbTclefi7G8hNmqhip04duYwYpbBFnBgw==
@@ -887,6 +887,19 @@
     clsx "^2.1.1"
     prop-types "^15.8.1"
     react-is "^18.3.1"
+
+"@mui/x-date-pickers@^7.12.0":
+  version "7.12.0"
+  resolved "https://registry.yarnpkg.com/@mui/x-date-pickers/-/x-date-pickers-7.12.0.tgz#189acc9e3d2a5be260fab9faf5e6add516e59b09"
+  integrity sha512-WU5C7QNfSpJ9cP8vl2sY7q35NW+0TUMgEy+sl98fcPhLckq3cgV1wnVxoZnQZ3BxVQAtx+7ag/MpefU03vJcVw==
+  dependencies:
+    "@babel/runtime" "^7.25.0"
+    "@mui/system" "^5.16.5"
+    "@mui/utils" "^5.16.5"
+    "@types/react-transition-group" "^4.4.10"
+    clsx "^2.1.1"
+    prop-types "^15.8.1"
+    react-transition-group "^4.4.5"
 
 "@noble/curves@1.4.0":
   version "1.4.0"
@@ -2248,6 +2261,11 @@ date-fns@^3.6.0:
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-3.6.0.tgz#f20ca4fe94f8b754951b24240676e8618c0206bf"
   integrity sha512-fRHTG8g/Gif+kSh50gaGEdToemgfj74aRX3swtiouboip5JDLAyDE9F11nHMIcvOaXeOC6D7SpNhi7uFyB7Uww==
+
+dayjs@^1.11.12:
+  version "1.11.12"
+  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.12.tgz#5245226cc7f40a15bf52e0b99fd2a04669ccac1d"
+  integrity sha512-Rt2g+nTbLlDWZTwwrIXjy9MeiZmSDI375FvZs72ngxx8PDC6YXOeR3q5LAuPzjZQxhiWdRKac7RKV+YyQYfYIg==
 
 debug@^4.1.0, debug@^4.3.1, debug@^4.3.2, debug@^4.3.4, debug@~4.3.1, debug@~4.3.2:
   version "4.3.6"

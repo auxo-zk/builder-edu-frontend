@@ -1,6 +1,7 @@
 import { CardCourse, Course, getCourses, NoData } from '@auxo-dev/frontend-common';
-import { Box, Grid } from '@mui/material';
+import { Box, Button, Grid } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { addressTest } from 'src/state/userProfile/state';
 import { useAccount } from 'wagmi';
 
 export default function ListCourse() {
@@ -17,7 +18,8 @@ export default function ListCourse() {
     }
     useEffect(() => {
         if (address) {
-            fetchCourses(address);
+            // fetchCourses(address);
+            fetchCourses(addressTest);
         }
     }, [address]);
     return (
@@ -28,7 +30,11 @@ export default function ListCourse() {
                     {courses.map((course, index) => {
                         return (
                             <Grid key={course.id + index} item xs={12} xsm={6} sm={4} lg={3}>
-                                <CardCourse data={course} />
+                                <CardCourse data={course}>
+                                    <Button size="small" fullWidth sx={{ mt: 2 }} variant="outlined">
+                                        Join Campaign
+                                    </Button>
+                                </CardCourse>
                             </Grid>
                         );
                     })}

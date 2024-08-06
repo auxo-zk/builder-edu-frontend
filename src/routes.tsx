@@ -4,6 +4,7 @@ import AppLayout from './layout';
 import YourCourses from './pages/your-courses/YourCourses';
 import Profile from './pages/profile/Profile';
 import CreateCourse from './pages/create-course/CreateCourse';
+import JoinCampaign from './pages/join-campaign/JoinCampaign';
 
 export default function AppRouter() {
     return useRoutes([
@@ -18,6 +19,14 @@ export default function AppRouter() {
                 {
                     path: 'your-courses/create',
                     element: <CreateCourse />,
+                },
+                {
+                    path: 'your-courses/edit/:id',
+                    element: <CreateCourse />,
+                },
+                {
+                    path: 'your-courses/:courseId/join-campaign/:campaignId',
+                    element: <JoinCampaign />,
                 },
                 {
                     path: 'profile',
