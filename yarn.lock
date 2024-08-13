@@ -15,10 +15,10 @@
     "@jridgewell/gen-mapping" "^0.3.5"
     "@jridgewell/trace-mapping" "^0.3.24"
 
-"@auxo-dev/frontend-common@^0.0.27":
-  version "0.0.27"
-  resolved "https://registry.yarnpkg.com/@auxo-dev/frontend-common/-/frontend-common-0.0.27.tgz#07c58cbbbf961f77b27249f6251e5db6a1027398"
-  integrity sha512-YANl478bnv5llSYd5a96TAeeMa5Wh4y9GeOc/mFEBc99HK+0TS4paNVA6gs53gum3X35OBvy1R5bcFIQsfS/0w==
+"@auxo-dev/frontend-common@^0.0.31":
+  version "0.0.31"
+  resolved "https://registry.yarnpkg.com/@auxo-dev/frontend-common/-/frontend-common-0.0.31.tgz#765dece3fcc3f8515a3386aff384a58f997155db"
+  integrity sha512-o2UBGipYV3pKw7t8BFe64HXbC0XvDak2iYdtGZbBRqGJ5J7BLjBRo9Zg2uVLwIR9ATq48WJ4vU4yyqg6Cr+WMg==
 
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.24.7":
   version "7.24.7"

@@ -1,30 +1,25 @@
-import { ButtonLoading, createDraftCourse, FileSaved, MemberData, saveFile } from '@auxo-dev/frontend-common';
+import { ButtonLoading, createDraftCourse, DraftCourse, FileSaved, MemberData, saveFile, updateDraftCourse } from '@auxo-dev/frontend-common';
 import { Box, Button, Container } from '@mui/material';
-import { useEffect, useState } from 'react';
-import EditCourseData, { EditCourseDataProps } from 'src/components/EditCourseData/EditCourseData';
-import { useUserProfile } from 'src/state/userProfile/state';
-import { toast } from 'react-toastify';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import EditCourseData from 'src/components/EditCourseData/EditCourseData';
+import { TDataEditCourse } from 'src/pages/create-course/CreateCourse';
 
-export type TDataEditCourse = Pick<
-    EditCourseDataProps,
-    'avatarImage' | 'bannerImage' | 'name' | 'publicKey' | 'problemStatement' | 'challengeAndRisk' | 'overViewDescription' | 'solution' | 'documents' | 'documentFiles' | 'members'
-> & { avatarFile: File | null; bannerFile: File | null };
-export default function CreateCourse() {
-    const [userProfile] = useUserProfile();
+export default function EditDraftInfo({ draftInfo }: { draftInfo: DraftCourse }) {
     const navigate = useNavigate();
     const [dataPost, setDataPost] = useState<TDataEditCourse>({
-        avatarImage: '',
-        bannerImage: '',
-        name: '',
-        publicKey: '',
-        overViewDescription: '',
-        problemStatement: '',
-        solution: '',
-        challengeAndRisk: '',
-        documents: [],
+        avatarImage: draftInfo.avatar,
+        bannerImage: draftInfo.banner,
+        name: draftInfo.name,
+        publicKey: draftInfo.publicKey,
+        overViewDescription: draftInfo.description,
+        problemStatement: draftInfo.problemStatement,
+        solution: draftInfo.solution,
+        challengeAndRisk: draftInfo.challengeAndRisk,
+        documents: draftInfo.documents,
         documentFiles: [],
-        members: [],
+        members: draftInfo.member,
         avatarFile: null,
         bannerFile: null,
     });
@@ -68,9 +63,9 @@ export default function CreateCourse() {
 
     async function saveDraft() {
         try {
-            let avatarUrl = '';
-            let banner = '';
-            let documents: FileSaved[] = [];
+            let avatarUrl = draftInfo.avatar;
+            let banner = draftInfo.banner;
+            let documents: FileSaved[] = dataPost.documents;
             if (dataPost.avatarFile) {
                 avatarUrl = (await saveFile(dataPost.avatarFile)).URL;
             }
@@ -78,9 +73,10 @@ export default function CreateCourse() {
                 banner = (await saveFile(dataPost.bannerFile)).URL;
             }
             if (dataPost.documentFiles.length > 0) {
-                documents = await Promise.all(dataPost.documentFiles.map((i) => saveFile(i.file)));
+                const documentAdded = await Promise.all(dataPost.documentFiles.map((i) => saveFile(i.file)));
+                documents.push(...documentAdded);
             }
-            const response = await createDraftCourse({
+            const response = await updateDraftCourse(draftInfo.id, {
                 avatarImage: avatarUrl,
                 coverImage: banner,
                 description: dataPost.overViewDescription,
@@ -135,12 +131,6 @@ export default function CreateCourse() {
         }
     }
 
-    useEffect(() => {
-        if (userProfile.state === 'hasData') {
-            const { name, address, img, description, link, role } = userProfile.data;
-            setDataPost((prev) => ({ ...prev, members: [{ name: name, role: role, publicKey: address, link: link }, ...prev.members] }));
-        }
-    }, [userProfile.state]);
     return (
         <Container sx={{ pb: 5 }}>
             <EditCourseData

@@ -1,6 +1,6 @@
 import { AppStateProvider, IconUser, Layout, walletConfig, WalletProvider } from '@auxo-dev/frontend-common';
 import { Outlet } from 'react-router-dom';
-import { Dashboard } from '@mui/icons-material';
+import { Class, ClassOutlined, Dashboard } from '@mui/icons-material';
 import { QueryClient } from '@tanstack/react-query';
 
 const config = walletConfig('6482349197b073ab1d34e32ec4907c1d');
@@ -15,9 +15,15 @@ export default function AppLayout() {
                     requiedLogin={true}
                     menu={[
                         {
-                            icon: Dashboard,
+                            icon: Class,
                             title: 'Your Courses',
                             url: '/your-courses',
+                            children: [],
+                        },
+                        {
+                            icon: ClassOutlined,
+                            title: 'Draft Courses',
+                            url: '/draft-courses',
                             children: [],
                         },
                         {

@@ -1,12 +1,14 @@
 import { CardCourse, Course, getCourses, NoData } from '@auxo-dev/frontend-common';
 import { Box, Button, Grid } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { addressTest } from 'src/state/userProfile/state';
 import { useAccount } from 'wagmi';
 
 export default function ListCourse() {
     const { address } = useAccount();
     const [courses, setCourses] = useState<Course[]>([]);
+    const navigate = useNavigate();
     async function fetchCourses(addressUser: string) {
         try {
             const response = await getCourses(addressUser);
@@ -31,7 +33,7 @@ export default function ListCourse() {
                         return (
                             <Grid key={course.id + index} item xs={12} xsm={6} sm={4} lg={3}>
                                 <CardCourse data={course}>
-                                    <Button size="small" fullWidth sx={{ mt: 2 }} variant="outlined">
+                                    <Button size="small" fullWidth sx={{ mt: 2 }} variant="outlined" onClick={() => navigate(`/your-courses/${course.id}/info-join-campaigns`)}>
                                         Join Campaign
                                     </Button>
                                 </CardCourse>
