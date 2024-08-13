@@ -115,7 +115,7 @@ export default function JoinCampaign() {
             <Box sx={{ display: 'flex', mt: 2, flexWrap: 'wrap', gap: 2 }}>
                 <Box>
                     <Breadcrumbs>
-                        <Link color="inherit" to="/courses" style={{ textDecoration: 'none', color: 'unset' }}>
+                        <Link color="inherit" to={`/your-courses/${course.id}/info-join-campaigns`} style={{ textDecoration: 'none', color: 'unset' }}>
                             <Box sx={{ display: 'flex', placeItems: 'center' }}>
                                 <ChevronLeftRounded color="primary" sx={{ fontSize: '24px' }} />
                                 <Typography color={'primary.main'}>Join Campaign</Typography>
