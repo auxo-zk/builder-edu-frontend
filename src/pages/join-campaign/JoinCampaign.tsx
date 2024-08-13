@@ -1,4 +1,18 @@
-import { BoxAddDocument, BoxIntroducePage, ButtonLoading, Campaign, Course, CustomEditor, FileSaved, getCampaign, getCourse, IconChevonRight, IconSpinLoading, imagePath, ScopeOfWork } from '@auxo-dev/frontend-common';
+import {
+    BoxAddDocument,
+    BoxIntroducePage,
+    ButtonLoading,
+    Campaign,
+    Course,
+    CustomEditor,
+    FileSaved,
+    getCampaign,
+    getCourse,
+    IconChevonRight,
+    IconSpinLoading,
+    imagePath,
+    ScopeOfWork,
+} from '@auxo-dev/frontend-common';
 import { ChevronLeftRounded, ChevronRight } from '@mui/icons-material';
 import { Box, Breadcrumbs, Container, MenuItem, Select, Typography } from '@mui/material';
 import React, { useEffect } from 'react';
@@ -146,14 +160,14 @@ export default function JoinCampaign() {
                                 size="small"
                                 defaultValue={'customAnswer'}
                                 onChange={(e) => {
-                                    const selectVal = String(e.target.value || '') as 'problemStatement' | 'solution' | 'challengesAndRisk' | 'customAnswer';
+                                    const selectVal = String(e.target.value || '') as 'problemStatement' | 'solution' | 'challengeAndRisk' | 'customAnswer';
                                     changeAnserQuestionCampaign(index, selectVal == 'customAnswer' ? '' : course[selectVal]);
                                 }}
                                 sx={{ minWidth: '210px' }}
                             >
                                 <MenuItem value={'problemStatement'}>Problem statement</MenuItem>
                                 <MenuItem value={'solution'}>Solution</MenuItem>
-                                <MenuItem value={'challengesAndRisk'}>Challenges & Risks</MenuItem>
+                                <MenuItem value={'challengeAndRisk'}>Challenges & Risks</MenuItem>
                                 <MenuItem value={'customAnswer'}>Custom Answer</MenuItem>
                             </Select>
                         </Box>

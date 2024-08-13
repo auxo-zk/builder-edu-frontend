@@ -11,6 +11,7 @@ export default function AppLayout() {
         <WalletProvider wagmiConfig={config} queryClient={queryClient}>
             <AppStateProvider>
                 <Layout
+                    role={import.meta.env.VITE_APP_USER_ROLE}
                     requiedLogin={true}
                     menu={[
                         {

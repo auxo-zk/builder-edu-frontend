@@ -1,10 +1,10 @@
 import { BoxProfile, IconSpinLoading } from '@auxo-dev/frontend-common';
 import { Box, Container, Typography } from '@mui/material';
-import React from 'react';
-import { useUserProfile } from 'src/state/userProfile/state';
+import { useFetchUserProfile, useUserProfile } from 'src/state/userProfile/state';
 
 export default function Profile() {
-    const [value] = useUserProfile();
+    const [value, set] = useUserProfile();
+    const fetchProfile = useFetchUserProfile();
     if (value.state === 'loading') {
         return (
             <Box>
@@ -17,7 +17,15 @@ export default function Profile() {
     }
     return (
         <Container sx={{ py: 5 }}>
-            <BoxProfile titlePage="Builder Profile" role="builder" initData={value.data} getProfile={() => {}} editable />
+            <BoxProfile
+                titlePage="Builder Profile"
+                role="builder"
+                initData={value.data}
+                getProfile={() => {
+                    fetchProfile();
+                }}
+                editable
+            />
         </Container>
     );
 }
