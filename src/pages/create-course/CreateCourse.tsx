@@ -1,4 +1,4 @@
-import { ButtonLoading, createDraftCourse, FileSaved, MemberData, saveFile } from '@auxo-dev/frontend-common';
+import { ButtonLoading, createDraftCourse, FileSaved, ipfsHashCreateCourse, MemberData, saveFile, TokenInfo } from '@auxo-dev/frontend-common';
 import { Box, Button, Container } from '@mui/material';
 import { useEffect, useState } from 'react';
 import EditCourseData, { EditCourseDataProps } from 'src/components/EditCourseData/EditCourseData';
@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 
 export type TDataEditCourse = Pick<
     EditCourseDataProps,
-    'avatarImage' | 'bannerImage' | 'name' | 'publicKey' | 'problemStatement' | 'challengeAndRisk' | 'overViewDescription' | 'solution' | 'documents' | 'documentFiles' | 'members'
+    'avatarImage' | 'bannerImage' | 'name' | 'publicKey' | 'problemStatement' | 'challengeAndRisk' | 'overViewDescription' | 'solution' | 'documents' | 'documentFiles' | 'members' | 'tokenFunding'
 > & { avatarFile: File | null; bannerFile: File | null };
 export default function CreateCourse() {
     const [userProfile] = useUserProfile();
@@ -27,10 +27,15 @@ export default function CreateCourse() {
         members: [],
         avatarFile: null,
         bannerFile: null,
+        tokenFunding: { address: '0x00', decimals: 0, symbol: '', name: '' },
     });
     function changeDataPost(data: Partial<TDataEditCourse>) {
         setDataPost((prev) => ({ ...prev, ...data }));
     }
+    function changeTokenFunding(tokenFunding: Partial<TokenInfo>) {
+        setDataPost((prev) => ({ ...prev, tokenFunding: { ...prev.tokenFunding, ...tokenFunding } }));
+    }
+
     function addDocumentFiles(files: TDataEditCourse['documentFiles']) {
         setDataPost((prev) => ({ ...prev, documentFiles: [...prev.documentFiles, ...files] }));
     }
@@ -91,6 +96,7 @@ export default function CreateCourse() {
                 problemStatement: dataPost.problemStatement,
                 challengeAndRisk: dataPost.challengeAndRisk,
                 documents: documents,
+                tokenFunding: dataPost.tokenFunding,
             });
             console.log(response);
             toast.success('Save draft success!');
@@ -103,19 +109,33 @@ export default function CreateCourse() {
 
     async function createCourse() {
         try {
+            if (!dataPost.name) throw Error('Name course is required');
+            if (!dataPost.publicKey) throw Error('Public key is required');
+            if (!dataPost.overViewDescription) throw Error('Overview description is required');
+            if (!dataPost.problemStatement) throw Error('Problem statement is required');
+            if (!dataPost.solution) throw Error('Solution is required');
+            if (!dataPost.challengeAndRisk) throw Error('Challenge and risk is required');
+            if (!dataPost.tokenFunding.address) throw Error('Token address is required');
+            if (dataPost.tokenFunding.decimals == 0) throw Error('Token address is invalid');
+
             let avatarUrl = '';
             let banner = '';
             let documents: FileSaved[] = [];
             if (dataPost.avatarFile) {
                 avatarUrl = (await saveFile(dataPost.avatarFile)).URL;
             }
+            if (!avatarUrl) throw Error('Avatar is required');
+
             if (dataPost.bannerFile) {
                 banner = (await saveFile(dataPost.bannerFile)).URL;
             }
+            if (!banner) throw Error('Banner is required');
+
             if (dataPost.documentFiles.length > 0) {
                 documents = await Promise.all(dataPost.documentFiles.map((i) => saveFile(i.file)));
             }
-            const response = await createDraftCourse({
+
+            const response = await ipfsHashCreateCourse({
                 avatarImage: avatarUrl,
                 coverImage: banner,
                 description: dataPost.overViewDescription,
@@ -126,6 +146,7 @@ export default function CreateCourse() {
                 problemStatement: dataPost.problemStatement,
                 challengeAndRisk: dataPost.challengeAndRisk,
                 documents: documents,
+                tokenFunding: dataPost.tokenFunding,
             });
             console.log(response);
             toast.success('Create course success!');
@@ -155,6 +176,8 @@ export default function CreateCourse() {
                 documentFiles={dataPost.documentFiles}
                 members={dataPost.members}
                 challengeAndRisk={dataPost.challengeAndRisk}
+                tokenFunding={dataPost.tokenFunding}
+                onChangeTokenFunding={changeTokenFunding}
                 addDocumentFiles={addDocumentFiles}
                 deleteDocumentFiles={deleteDocumentFiles}
                 deleteDocuments={deleteDocuments}
@@ -173,7 +196,7 @@ export default function CreateCourse() {
 
             <Box sx={{ mt: 3 }} textAlign={'right'}>
                 <ButtonSaveDraft onClick={saveDraft} />
-                <Button variant="contained">Create Course</Button>
+                <ButtonCreateCourse onClick={createCourse} />
             </Box>
         </Container>
     );
@@ -190,6 +213,21 @@ function ButtonSaveDraft({ onClick }: { onClick: () => Promise<void> }) {
     return (
         <ButtonLoading muiProps={{ variant: 'contained', color: 'secondary', sx: { mr: 1 }, onClick: handleSaveDraft }} isLoading={loading}>
             Save Draft
+        </ButtonLoading>
+    );
+}
+
+function ButtonCreateCourse({ onClick }: { onClick: () => Promise<void> }) {
+    const [loading, setLoading] = useState(false);
+
+    async function handleClick() {
+        setLoading(true);
+        await onClick();
+        setLoading(false);
+    }
+    return (
+        <ButtonLoading muiProps={{ variant: 'contained', onClick: handleClick }} isLoading={loading}>
+            Create Course
         </ButtonLoading>
     );
 }

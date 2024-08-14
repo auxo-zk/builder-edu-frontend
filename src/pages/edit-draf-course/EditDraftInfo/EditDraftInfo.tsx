@@ -1,4 +1,4 @@
-import { ButtonLoading, createDraftCourse, DraftCourse, FileSaved, MemberData, saveFile, updateDraftCourse } from '@auxo-dev/frontend-common';
+import { ButtonLoading, createDraftCourse, DraftCourse, FileSaved, ipfsHashCreateCourse, MemberData, saveFile, TokenInfo, updateDraftCourse } from '@auxo-dev/frontend-common';
 import { Box, Button, Container } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -22,9 +22,13 @@ export default function EditDraftInfo({ draftInfo }: { draftInfo: DraftCourse })
         members: draftInfo.member,
         avatarFile: null,
         bannerFile: null,
+        tokenFunding: draftInfo.tokenFunding,
     });
     function changeDataPost(data: Partial<TDataEditCourse>) {
         setDataPost((prev) => ({ ...prev, ...data }));
+    }
+    function changeTokenFunding(tokenFunding: Partial<TokenInfo>) {
+        setDataPost((prev) => ({ ...prev, tokenFunding: { ...prev.tokenFunding, ...tokenFunding } }));
     }
     function addDocumentFiles(files: TDataEditCourse['documentFiles']) {
         setDataPost((prev) => ({ ...prev, documentFiles: [...prev.documentFiles, ...files] }));
@@ -87,6 +91,7 @@ export default function EditDraftInfo({ draftInfo }: { draftInfo: DraftCourse })
                 problemStatement: dataPost.problemStatement,
                 challengeAndRisk: dataPost.challengeAndRisk,
                 documents: documents,
+                tokenFunding: dataPost.tokenFunding,
             });
             console.log(response);
             toast.success('Save draft success!');
@@ -99,19 +104,34 @@ export default function EditDraftInfo({ draftInfo }: { draftInfo: DraftCourse })
 
     async function createCourse() {
         try {
-            let avatarUrl = '';
-            let banner = '';
-            let documents: FileSaved[] = [];
+            if (!dataPost.name) throw Error('Name course is required');
+            if (!dataPost.publicKey) throw Error('Public key is required');
+            if (!dataPost.overViewDescription) throw Error('Overview description is required');
+            if (!dataPost.problemStatement) throw Error('Problem statement is required');
+            if (!dataPost.solution) throw Error('Solution is required');
+            if (!dataPost.challengeAndRisk) throw Error('Challenge and risk is required');
+            if (!dataPost.tokenFunding.address) throw Error('Token address is required');
+            if (dataPost.tokenFunding.decimals == 0) throw Error('Token address is invalid');
+
+            let avatarUrl = draftInfo.avatar;
+            let banner = draftInfo.banner;
+            let documents: FileSaved[] = draftInfo.documents;
             if (dataPost.avatarFile) {
                 avatarUrl = (await saveFile(dataPost.avatarFile)).URL;
             }
+            if (!avatarUrl) throw Error('Avatar is required');
+
             if (dataPost.bannerFile) {
                 banner = (await saveFile(dataPost.bannerFile)).URL;
             }
+            if (!banner) throw Error('Banner is required');
+
             if (dataPost.documentFiles.length > 0) {
-                documents = await Promise.all(dataPost.documentFiles.map((i) => saveFile(i.file)));
+                const documentsAdded = await Promise.all(dataPost.documentFiles.map((i) => saveFile(i.file)));
+                documents.push(...documentsAdded);
             }
-            const response = await createDraftCourse({
+
+            const response = await ipfsHashCreateCourse({
                 avatarImage: avatarUrl,
                 coverImage: banner,
                 description: dataPost.overViewDescription,
@@ -122,6 +142,7 @@ export default function EditDraftInfo({ draftInfo }: { draftInfo: DraftCourse })
                 problemStatement: dataPost.problemStatement,
                 challengeAndRisk: dataPost.challengeAndRisk,
                 documents: documents,
+                tokenFunding: dataPost.tokenFunding,
             });
             console.log(response);
             toast.success('Create course success!');
@@ -145,6 +166,8 @@ export default function EditDraftInfo({ draftInfo }: { draftInfo: DraftCourse })
                 documentFiles={dataPost.documentFiles}
                 members={dataPost.members}
                 challengeAndRisk={dataPost.challengeAndRisk}
+                tokenFunding={dataPost.tokenFunding}
+                onChangeTokenFunding={changeTokenFunding}
                 addDocumentFiles={addDocumentFiles}
                 deleteDocumentFiles={deleteDocumentFiles}
                 deleteDocuments={deleteDocuments}
@@ -163,7 +186,7 @@ export default function EditDraftInfo({ draftInfo }: { draftInfo: DraftCourse })
 
             <Box sx={{ mt: 3 }} textAlign={'right'}>
                 <ButtonSaveDraft onClick={saveDraft} />
-                <Button variant="contained">Create Course</Button>
+                <ButtonCreateCourse onClick={createCourse} />
             </Box>
         </Container>
     );
@@ -180,6 +203,20 @@ function ButtonSaveDraft({ onClick }: { onClick: () => Promise<void> }) {
     return (
         <ButtonLoading muiProps={{ variant: 'contained', color: 'secondary', sx: { mr: 1 }, onClick: handleSaveDraft }} isLoading={loading}>
             Save Draft
+        </ButtonLoading>
+    );
+}
+function ButtonCreateCourse({ onClick }: { onClick: () => Promise<void> }) {
+    const [loading, setLoading] = useState(false);
+
+    async function handleClick() {
+        setLoading(true);
+        await onClick();
+        setLoading(false);
+    }
+    return (
+        <ButtonLoading muiProps={{ variant: 'contained', onClick: handleClick }} isLoading={loading}>
+            Create Course
         </ButtonLoading>
     );
 }
