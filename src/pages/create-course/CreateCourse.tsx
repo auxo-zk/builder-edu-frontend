@@ -16,18 +16,18 @@ import EditCourseData, { EditCourseDataProps } from 'src/components/EditCourseDa
 import { useUserProfile } from 'src/state/userProfile/state';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import { useConfig, useWriteContract } from 'wagmi';
+import { useWriteContract } from 'wagmi';
 import { waitForTransactionReceipt } from 'viem/actions';
+import { config } from 'src/constants';
 
 export type TDataEditCourse = Pick<
     EditCourseDataProps,
-    'avatarImage' | 'bannerImage' | 'name' | 'publicKey' | 'problemStatement' | 'challengeAndRisk' | 'overViewDescription' | 'solution' | 'documents' | 'documentFiles' | 'members' | 'tokenFunding'
+    'courseSymbol' | 'avatarImage' | 'bannerImage' | 'name' | 'publicKey' | 'problemStatement' | 'challengeAndRisk' | 'overViewDescription' | 'solution' | 'documents' | 'documentFiles' | 'members'
 > & { avatarFile: File | null; bannerFile: File | null };
 export default function CreateCourse() {
     const [userProfile] = useUserProfile();
     const navigate = useNavigate();
     const { switchToChainSelected, chainIdSelected } = useSwitchToSelectedChain();
-    const { getClient } = useConfig();
     const { writeContractAsync } = useWriteContract();
     const [dataPost, setDataPost] = useState<TDataEditCourse>({
         avatarImage: '',
@@ -43,13 +43,10 @@ export default function CreateCourse() {
         members: [],
         avatarFile: null,
         bannerFile: null,
-        tokenFunding: { address: '0x00', decimals: 0, symbol: '', name: '' },
+        courseSymbol: '',
     });
     function changeDataPost(data: Partial<TDataEditCourse>) {
         setDataPost((prev) => ({ ...prev, ...data }));
-    }
-    function changeTokenFunding(tokenFunding: Partial<TokenInfo>) {
-        setDataPost((prev) => ({ ...prev, tokenFunding: { ...prev.tokenFunding, ...tokenFunding } }));
     }
 
     function addDocumentFiles(files: TDataEditCourse['documentFiles']) {
@@ -112,7 +109,6 @@ export default function CreateCourse() {
                 problemStatement: dataPost.problemStatement,
                 challengeAndRisk: dataPost.challengeAndRisk,
                 documents: documents,
-                tokenFunding: dataPost.tokenFunding,
             });
             console.log(response);
             toast.success('Save draft success!');
@@ -131,8 +127,6 @@ export default function CreateCourse() {
             if (!dataPost.problemStatement) throw Error('Problem statement is required');
             if (!dataPost.solution) throw Error('Solution is required');
             if (!dataPost.challengeAndRisk) throw Error('Challenge and risk is required');
-            if (!dataPost.tokenFunding.address) throw Error('Token address is required');
-            if (dataPost.tokenFunding.decimals == 0) throw Error('Token address is invalid');
 
             let avatarUrl = '';
             let banner = '';
@@ -162,7 +156,6 @@ export default function CreateCourse() {
                 problemStatement: dataPost.problemStatement,
                 challengeAndRisk: dataPost.challengeAndRisk,
                 documents: documents,
-                tokenFunding: dataPost.tokenFunding,
             });
             console.log(response);
 
@@ -170,12 +163,12 @@ export default function CreateCourse() {
             const exeAction = await writeContractAsync({
                 abi: abiGovernorFactory,
                 functionName: 'createGovernor',
-                args: [dataPost.name, dataPost.tokenFunding.name, dataPost.tokenFunding.symbol, response.HashHex],
+                args: [dataPost.name, dataPost.name, dataPost.courseSymbol, response.HashHex],
                 address: contractAddress[chainIdSelected].GovernorFactory,
             });
             console.log({ exeAction });
 
-            const waitTx = await waitForTransactionReceipt(getClient(), { hash: exeAction });
+            const waitTx = await waitForTransactionReceipt(config.getClient(), { hash: exeAction });
             console.log({ waitTx });
             toast.success('Create course success!');
         } catch (error) {
@@ -204,8 +197,8 @@ export default function CreateCourse() {
                 documentFiles={dataPost.documentFiles}
                 members={dataPost.members}
                 challengeAndRisk={dataPost.challengeAndRisk}
-                tokenFunding={dataPost.tokenFunding}
-                onChangeTokenFunding={changeTokenFunding}
+                courseSymbol={dataPost.courseSymbol}
+                onChangeCouseSymbol={(courseSymbol) => changeDataPost({ courseSymbol })}
                 addDocumentFiles={addDocumentFiles}
                 deleteDocumentFiles={deleteDocumentFiles}
                 deleteDocuments={deleteDocuments}
