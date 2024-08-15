@@ -1,13 +1,35 @@
-import { ButtonLoading, createDraftCourse, DraftCourse, FileSaved, ipfsHashCreateCourse, MemberData, saveFile, TokenInfo, updateDraftCourse } from '@auxo-dev/frontend-common';
-import { Box, Button, Container } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import {
+    abiGovernorFactory,
+    auxoDevNet,
+    ButtonLoading,
+    contractAddress,
+    DraftCourse,
+    ErrorExeTransaction,
+    FileSaved,
+    ipfsHashCreateCourse,
+    MemberData,
+    openCampusCodex,
+    saveFile,
+    TokenInfo,
+    updateDraftCourse,
+    useSwitchToSelectedChain,
+} from '@auxo-dev/frontend-common';
+import { Box, Container } from '@mui/material';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import EditCourseData from 'src/components/EditCourseData/EditCourseData';
+import { config } from 'src/constants';
 import { TDataEditCourse } from 'src/pages/create-course/CreateCourse';
+import { createClient, http } from 'viem';
+import { waitForTransactionReceipt } from 'viem/actions';
+import { createConfig, useClient, useConfig, useWriteContract } from 'wagmi';
 
 export default function EditDraftInfo({ draftInfo }: { draftInfo: DraftCourse }) {
     const navigate = useNavigate();
+    const { switchToChainSelected, chainIdSelected } = useSwitchToSelectedChain();
+    const { writeContractAsync } = useWriteContract();
+    const { getClient } = useConfig();
     const [dataPost, setDataPost] = useState<TDataEditCourse>({
         avatarImage: draftInfo.avatar,
         bannerImage: draftInfo.banner,
@@ -145,10 +167,23 @@ export default function EditDraftInfo({ draftInfo }: { draftInfo: DraftCourse })
                 tokenFunding: dataPost.tokenFunding,
             });
             console.log(response);
+
+            await switchToChainSelected();
+            const exeAction = await writeContractAsync({
+                abi: abiGovernorFactory,
+                functionName: 'createGovernor',
+                args: [dataPost.name, dataPost.tokenFunding.name, dataPost.tokenFunding.symbol, response.HashHex],
+                address: contractAddress[chainIdSelected].GovernorFactory,
+            });
+            console.log({ exeAction });
+
+            const waitTx = await waitForTransactionReceipt(getClient(), { hash: exeAction });
+            console.log({ waitTx });
+
             toast.success('Create course success!');
         } catch (error) {
             console.error(error);
-            toast.error('Error: ' + (error as Error).message);
+            toast.error(<ErrorExeTransaction error={error} />);
         }
     }
 

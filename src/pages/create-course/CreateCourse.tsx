@@ -1,10 +1,23 @@
-import { ButtonLoading, createDraftCourse, FileSaved, ipfsHashCreateCourse, MemberData, saveFile, TokenInfo } from '@auxo-dev/frontend-common';
-import { Box, Button, Container } from '@mui/material';
+import {
+    abiGovernorFactory,
+    ButtonLoading,
+    contractAddress,
+    createDraftCourse,
+    FileSaved,
+    ipfsHashCreateCourse,
+    MemberData,
+    saveFile,
+    TokenInfo,
+    useSwitchToSelectedChain,
+} from '@auxo-dev/frontend-common';
+import { Box, Container } from '@mui/material';
 import { useEffect, useState } from 'react';
 import EditCourseData, { EditCourseDataProps } from 'src/components/EditCourseData/EditCourseData';
 import { useUserProfile } from 'src/state/userProfile/state';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { useConfig, useWriteContract } from 'wagmi';
+import { waitForTransactionReceipt } from 'viem/actions';
 
 export type TDataEditCourse = Pick<
     EditCourseDataProps,
@@ -13,6 +26,9 @@ export type TDataEditCourse = Pick<
 export default function CreateCourse() {
     const [userProfile] = useUserProfile();
     const navigate = useNavigate();
+    const { switchToChainSelected, chainIdSelected } = useSwitchToSelectedChain();
+    const { getClient } = useConfig();
+    const { writeContractAsync } = useWriteContract();
     const [dataPost, setDataPost] = useState<TDataEditCourse>({
         avatarImage: '',
         bannerImage: '',
@@ -149,6 +165,18 @@ export default function CreateCourse() {
                 tokenFunding: dataPost.tokenFunding,
             });
             console.log(response);
+
+            await switchToChainSelected();
+            const exeAction = await writeContractAsync({
+                abi: abiGovernorFactory,
+                functionName: 'createGovernor',
+                args: [dataPost.name, dataPost.tokenFunding.name, dataPost.tokenFunding.symbol, response.HashHex],
+                address: contractAddress[chainIdSelected].GovernorFactory,
+            });
+            console.log({ exeAction });
+
+            const waitTx = await waitForTransactionReceipt(getClient(), { hash: exeAction });
+            console.log({ waitTx });
             toast.success('Create course success!');
         } catch (error) {
             console.error(error);
