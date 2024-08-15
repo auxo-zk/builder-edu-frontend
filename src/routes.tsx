@@ -8,6 +8,7 @@ import JoinCampaign from './pages/join-campaign/JoinCampaign';
 import InfoCourseJoinedCampaign from './pages/info-course-joined-campaign/InfoCourseJoinedCampaign';
 import DraftCourse from './pages/draft-course/DraftCourse';
 import EditDraftCourse from './pages/edit-draf-course/EditDraftCourse';
+import ProfileGuest from './pages/profile-guest/ProfileGuest';
 
 export default function AppRouter() {
     return useRoutes([
@@ -42,6 +43,10 @@ export default function AppRouter() {
                 {
                     path: 'profile',
                     element: <Profile />,
+                },
+                {
+                    path: 'profile/:userAddress',
+                    element: <ProfileGuest />,
                 },
                 {
                     path: '*',
