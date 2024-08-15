@@ -1,6 +1,5 @@
 import {
     abiGovernorFactory,
-    auxoDevNet,
     ButtonLoading,
     contractAddress,
     DraftCourse,
@@ -8,9 +7,7 @@ import {
     FileSaved,
     ipfsHashCreateCourse,
     MemberData,
-    openCampusCodex,
     saveFile,
-    TokenInfo,
     updateDraftCourse,
     useSwitchToSelectedChain,
 } from '@auxo-dev/frontend-common';
@@ -21,15 +18,13 @@ import { toast } from 'react-toastify';
 import EditCourseData from 'src/components/EditCourseData/EditCourseData';
 import { config } from 'src/constants';
 import { TDataEditCourse } from 'src/pages/create-course/CreateCourse';
-import { createClient, http } from 'viem';
 import { waitForTransactionReceipt } from 'viem/actions';
-import { createConfig, useClient, useConfig, useWriteContract } from 'wagmi';
+import { useWriteContract } from 'wagmi';
 
 export default function EditDraftInfo({ draftInfo }: { draftInfo: DraftCourse }) {
     const navigate = useNavigate();
     const { switchToChainSelected, chainIdSelected } = useSwitchToSelectedChain();
     const { writeContractAsync } = useWriteContract();
-    const { getClient } = useConfig();
     const [dataPost, setDataPost] = useState<TDataEditCourse>({
         avatarImage: draftInfo.avatar,
         bannerImage: draftInfo.banner,
@@ -44,14 +39,12 @@ export default function EditDraftInfo({ draftInfo }: { draftInfo: DraftCourse })
         members: draftInfo.member,
         avatarFile: null,
         bannerFile: null,
-        tokenFunding: draftInfo.tokenFunding,
+        courseSymbol: draftInfo.courseSymbol,
     });
     function changeDataPost(data: Partial<TDataEditCourse>) {
         setDataPost((prev) => ({ ...prev, ...data }));
     }
-    function changeTokenFunding(tokenFunding: Partial<TokenInfo>) {
-        setDataPost((prev) => ({ ...prev, tokenFunding: { ...prev.tokenFunding, ...tokenFunding } }));
-    }
+
     function addDocumentFiles(files: TDataEditCourse['documentFiles']) {
         setDataPost((prev) => ({ ...prev, documentFiles: [...prev.documentFiles, ...files] }));
     }
@@ -113,7 +106,7 @@ export default function EditDraftInfo({ draftInfo }: { draftInfo: DraftCourse })
                 problemStatement: dataPost.problemStatement,
                 challengeAndRisk: dataPost.challengeAndRisk,
                 documents: documents,
-                tokenFunding: dataPost.tokenFunding,
+                courseSymbol: dataPost.courseSymbol,
             });
             console.log(response);
             toast.success('Save draft success!');
@@ -132,8 +125,7 @@ export default function EditDraftInfo({ draftInfo }: { draftInfo: DraftCourse })
             if (!dataPost.problemStatement) throw Error('Problem statement is required');
             if (!dataPost.solution) throw Error('Solution is required');
             if (!dataPost.challengeAndRisk) throw Error('Challenge and risk is required');
-            if (!dataPost.tokenFunding.address) throw Error('Token address is required');
-            if (dataPost.tokenFunding.decimals == 0) throw Error('Token address is invalid');
+            if (!dataPost.courseSymbol) throw Error('Course symbol is required');
 
             let avatarUrl = draftInfo.avatar;
             let banner = draftInfo.banner;
@@ -164,7 +156,7 @@ export default function EditDraftInfo({ draftInfo }: { draftInfo: DraftCourse })
                 problemStatement: dataPost.problemStatement,
                 challengeAndRisk: dataPost.challengeAndRisk,
                 documents: documents,
-                tokenFunding: dataPost.tokenFunding,
+                courseSymbol: dataPost.courseSymbol,
             });
             console.log(response);
 
@@ -172,12 +164,12 @@ export default function EditDraftInfo({ draftInfo }: { draftInfo: DraftCourse })
             const exeAction = await writeContractAsync({
                 abi: abiGovernorFactory,
                 functionName: 'createGovernor',
-                args: [dataPost.name, dataPost.tokenFunding.name, dataPost.tokenFunding.symbol, response.HashHex],
+                args: [dataPost.name, dataPost.name, dataPost.courseSymbol, response.HashHex],
                 address: contractAddress[chainIdSelected].GovernorFactory,
             });
             console.log({ exeAction });
 
-            const waitTx = await waitForTransactionReceipt(getClient(), { hash: exeAction });
+            const waitTx = await waitForTransactionReceipt(config.getClient(), { hash: exeAction });
             console.log({ waitTx });
 
             toast.success('Create course success!');
@@ -201,8 +193,8 @@ export default function EditDraftInfo({ draftInfo }: { draftInfo: DraftCourse })
                 documentFiles={dataPost.documentFiles}
                 members={dataPost.members}
                 challengeAndRisk={dataPost.challengeAndRisk}
-                tokenFunding={dataPost.tokenFunding}
-                onChangeTokenFunding={changeTokenFunding}
+                courseSymbol={dataPost.courseSymbol}
+                onChangeCouseSymbol={(courseSymbol) => changeDataPost({ courseSymbol })}
                 addDocumentFiles={addDocumentFiles}
                 deleteDocumentFiles={deleteDocumentFiles}
                 deleteDocuments={deleteDocuments}

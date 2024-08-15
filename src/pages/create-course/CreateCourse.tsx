@@ -109,6 +109,7 @@ export default function CreateCourse() {
                 problemStatement: dataPost.problemStatement,
                 challengeAndRisk: dataPost.challengeAndRisk,
                 documents: documents,
+                courseSymbol: dataPost.courseSymbol,
             });
             console.log(response);
             toast.success('Save draft success!');
@@ -156,6 +157,7 @@ export default function CreateCourse() {
                 problemStatement: dataPost.problemStatement,
                 challengeAndRisk: dataPost.challengeAndRisk,
                 documents: documents,
+                courseSymbol: dataPost.courseSymbol,
             });
             console.log(response);
 
