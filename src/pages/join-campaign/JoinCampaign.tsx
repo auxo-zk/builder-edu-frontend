@@ -1,23 +1,33 @@
 import {
+    abiCampaign,
     BoxAddDocument,
     BoxIntroducePage,
     ButtonLoading,
     Campaign,
+    contractAddress,
     Course,
     CustomEditor,
+    ErrorExeTransaction,
     FileSaved,
     getCampaign,
     getCourse,
     IconChevonRight,
     IconSpinLoading,
     imagePath,
+    ipfsHashJoinCampaign,
+    saveFile,
     ScopeOfWork,
+    useSwitchToSelectedChain,
 } from '@auxo-dev/frontend-common';
 import { ChevronLeftRounded, ChevronRight } from '@mui/icons-material';
 import { Box, Breadcrumbs, Container, MenuItem, Select, Typography } from '@mui/material';
 import React, { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import ScopeOfWorkComponent from './ScopeOfWork/ScopeOfWork';
+import { toast } from 'react-toastify';
+import { useAccount, useWriteContract } from 'wagmi';
+import { waitForTransactionReceipt } from 'viem/actions';
+import { config } from 'src/constants';
 
 export type EditMilestoneData = {
     answerQuestionCampaign: string[];
@@ -30,6 +40,9 @@ export default function JoinCampaign() {
     const [campaign, setCampaign] = React.useState<Campaign | null>(null);
     const [course, setCourse] = React.useState<Course | null>(null);
     const [loading, setLoading] = React.useState(true);
+    const { address } = useAccount();
+    const { writeContractAsync } = useWriteContract();
+    const { chainId, chainIdSelected, switchToChainSelected } = useSwitchToSelectedChain();
     const [milestonData, setMilestonData] = React.useState<EditMilestoneData>({
         answerQuestionCampaign: [],
         documentFiles: [],
@@ -68,7 +81,52 @@ export default function JoinCampaign() {
         }
         return null;
     }
-    console.log(params);
+
+    async function submit() {
+        const idtoast = toast.loading('Creating transaction...', { position: 'top-center', type: 'info' });
+        try {
+            if (!address) {
+                throw Error('Connect wallet required!');
+            }
+            if (!course || !campaign) {
+                throw Error('Course or campaign not found!');
+            }
+            if (course.founder != address) {
+                throw Error('You are not the founder of this course! Address founder: ' + course.founder);
+            }
+
+            let documents: FileSaved[] = [];
+            if (milestonData.documentFiles.length > 0) {
+                documents = await Promise.all(milestonData.documentFiles.map((i) => saveFile(i.file)));
+            }
+
+            const ipfs = await ipfsHashJoinCampaign({
+                answers: milestonData.answerQuestionCampaign,
+                scopeOfWorks: milestonData.scopeOfWorks,
+                documents: documents,
+            });
+            console.log(ipfs);
+            await switchToChainSelected();
+            const exeAction = await writeContractAsync({
+                abi: abiCampaign,
+                address: contractAddress[chainIdSelected].Campaign,
+                functionName: 'joinCampaign',
+                args: [BigInt(campaign.campaignId), course.address, ipfs.HashHex],
+            });
+
+            console.log({ exeAction });
+
+            const waitTx = await waitForTransactionReceipt(config.getClient(), { hash: exeAction });
+            console.log({ waitTx });
+
+            toast.update(idtoast, { render: 'Transaction successfull!', isLoading: false, type: 'success', autoClose: 3000, hideProgressBar: false });
+        } catch (error) {
+            console.error(error);
+            if (idtoast) {
+                toast.update(idtoast, { render: <ErrorExeTransaction error={error} />, type: 'error', position: 'top-center', isLoading: false, autoClose: 4000, hideProgressBar: false });
+            }
+        }
+    }
 
     useEffect(() => {
         (async () => {
@@ -182,7 +240,7 @@ export default function JoinCampaign() {
             })}
 
             <Box sx={{ mt: 5 }}>
-                <ScopeOfWorkComponent scopeOfWorks={milestonData.scopeOfWorks} setMilestonData={setMilestonData} />
+                <ScopeOfWorkComponent token={campaign.tokenFunding} scopeOfWorks={milestonData.scopeOfWorks} setMilestonData={setMilestonData} />
             </Box>
             <Box sx={{ mt: 8 }}>
                 <BoxAddDocument
@@ -199,10 +257,22 @@ export default function JoinCampaign() {
             </Box>
 
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mt: 3 }}>
-                <ButtonLoading isLoading={false} muiProps={{ variant: 'contained', onClick: () => {} }}>
-                    Submit
-                </ButtonLoading>
+                <ButtonSubmit onClick={submit} />
             </Box>
         </Container>
+    );
+}
+
+function ButtonSubmit({ onClick }: { onClick: () => Promise<void> }) {
+    const [loading, setLoading] = React.useState(false);
+    const handerClick = async () => {
+        setLoading(true);
+        await onClick();
+        setLoading(false);
+    };
+    return (
+        <ButtonLoading isLoading={loading} muiProps={{ variant: 'contained', onClick: handerClick }}>
+            Submit
+        </ButtonLoading>
     );
 }

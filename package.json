@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@auxo-dev/frontend-common": "^0.0.45",
+    "@auxo-dev/frontend-common": "^0.0.50",
     "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^5.16.5",

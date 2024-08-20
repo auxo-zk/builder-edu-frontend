@@ -1,4 +1,4 @@
-import { CardCourse, Course, getCourses, NoData } from '@auxo-dev/frontend-common';
+import { CardCourse, Course, getCourses, IconSpinLoading, NoData } from '@auxo-dev/frontend-common';
 import { Box, Button, Grid } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -8,24 +8,35 @@ import { useAccount } from 'wagmi';
 export default function ListCourse() {
     const { address } = useAccount();
     const [courses, setCourses] = useState<Course[]>([]);
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+
     async function fetchCourses(addressUser: string) {
+        setLoading(true);
         try {
-            const response = await getCourses(addressUser);
-            setCourses(response);
+            if (addressUser) {
+                const response = await getCourses(addressUser);
+                setCourses(response);
+            }
         } catch (error) {
             console.error(error);
             setCourses([]);
         }
+        setLoading(false);
     }
+
     useEffect(() => {
-        if (address) {
-            // fetchCourses(address);
-            fetchCourses(addressTest);
-        }
+        fetchCourses(address || '');
     }, [address]);
+    if (loading) {
+        return (
+            <Box mt={3}>
+                <IconSpinLoading sx={{ fontSize: '100px' }} />
+            </Box>
+        );
+    }
     return (
-        <Box>
+        <Box mt={3}>
             <Box textAlign={'center'}>{courses.length === 0 && <NoData />}</Box>
             <Box>
                 <Grid container spacing={2}>

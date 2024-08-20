@@ -15,10 +15,10 @@
     "@jridgewell/gen-mapping" "^0.3.5"
     "@jridgewell/trace-mapping" "^0.3.24"
 
-"@auxo-dev/frontend-common@^0.0.45":
-  version "0.0.45"
-  resolved "https://registry.yarnpkg.com/@auxo-dev/frontend-common/-/frontend-common-0.0.45.tgz#e05e7025a67d14cab0ee52c525a401776a5bc471"
-  integrity sha512-3ydPVBIQRexgVrBovONJNirbP3l/ECLPQnZ2KEF3NqAAEiwPlCW3TzG3FNHkVmce5o4Rw+9PPHIJ8KVBhNq+/Q==
+"@auxo-dev/frontend-common@^0.0.50":
+  version "0.0.50"
+  resolved "https://registry.yarnpkg.com/@auxo-dev/frontend-common/-/frontend-common-0.0.50.tgz#0bf86ecd0ffc652a2956c7a7989b04c70eea5543"
+  integrity sha512-35vjeLK0yUifwrCw00XRZl5yGnut/QESefyUdKi47p9/6XAEhpd7lWQYaVWwq9jYsbV3bm9pkjSKHS+wnYWy3Q==
   dependencies:
     bs58 "^6.0.0"
     buffer "^6.0.3"

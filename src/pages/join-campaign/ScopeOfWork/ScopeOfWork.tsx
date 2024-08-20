@@ -2,17 +2,18 @@ import React from 'react';
 import { EditMilestoneData } from '../JoinCampaign';
 import { Box, Button, IconButton, Paper, TextField, Typography } from '@mui/material';
 import { Add, DeleteOutline } from '@mui/icons-material';
-import { CustomEditor } from '@auxo-dev/frontend-common';
+import { CustomEditor, TokenInfo } from '@auxo-dev/frontend-common';
 import { LocalizationProvider, DateTimePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Dayjs } from 'dayjs';
 
 type Props = {
     scopeOfWorks: EditMilestoneData['scopeOfWorks'];
+    token: TokenInfo;
     setMilestonData: React.Dispatch<React.SetStateAction<EditMilestoneData>>;
 };
 
-export default function ScopeOfWork({ scopeOfWorks, setMilestonData }: Props) {
+export default function ScopeOfWork({ scopeOfWorks, setMilestonData, token }: Props) {
     function editScopeOfWork(index: number, value: Partial<EditMilestoneData['scopeOfWorks'][number]>) {
         setMilestonData((prev) => ({
             ...prev,
@@ -101,7 +102,7 @@ export default function ScopeOfWork({ scopeOfWorks, setMilestonData }: Props) {
                                             })
                                         }
                                         InputProps={{
-                                            endAdornment: 'Mina',
+                                            endAdornment: token.symbol,
                                         }}
                                         sx={{ mr: 1 }}
                                     />
