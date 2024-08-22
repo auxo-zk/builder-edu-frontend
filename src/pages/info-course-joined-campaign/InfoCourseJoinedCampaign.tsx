@@ -46,7 +46,7 @@ export default function InfoCourseJoinedCampaign() {
     return (
         <Container sx={{ py: 5 }}>
             <BoxIntroducePage title="Joined Campaign" thumnail="/images/auxo-thumbnail3.png"></BoxIntroducePage>
-            <CampaignJoined courseId={course.id} />
+            <CampaignJoined course={course} />
         </Container>
     );
 }

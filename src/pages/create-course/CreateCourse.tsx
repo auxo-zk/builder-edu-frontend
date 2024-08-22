@@ -173,6 +173,7 @@ export default function CreateCourse() {
             const waitTx = await waitForTransactionReceipt(config.getClient(), { hash: exeAction });
             console.log({ waitTx });
             toast.success('Create course success!');
+            navigate('/your-courses');
         } catch (error) {
             console.error(error);
             toast.error('Error: ' + (error as Error).message);

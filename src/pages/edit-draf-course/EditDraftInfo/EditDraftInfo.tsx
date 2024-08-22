@@ -173,6 +173,7 @@ export default function EditDraftInfo({ draftInfo }: { draftInfo: DraftCourse })
             console.log({ waitTx });
 
             toast.success('Create course success!');
+            navigate('/your-courses');
         } catch (error) {
             console.error(error);
             toast.error(<ErrorExeTransaction error={error} />);

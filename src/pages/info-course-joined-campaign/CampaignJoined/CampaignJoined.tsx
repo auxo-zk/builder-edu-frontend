@@ -1,11 +1,23 @@
-import { Campaign, CampaignFundraising, CardCampaign, getCampaigns, getFundraisingInfoByProjectId, IconSpinLoading, TableCell, TableHeader, TableRow, TableWrapper } from '@auxo-dev/frontend-common';
+import {
+    Campaign,
+    CampaignFundraising,
+    CardCampaign,
+    Course,
+    getCampaigns,
+    getFundraisingInfoByProjectId,
+    IconSpinLoading,
+    TableCell,
+    TableHeader,
+    TableRow,
+    TableWrapper,
+} from '@auxo-dev/frontend-common';
 import { Box, Button, Grid, Typography } from '@mui/material';
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const tableCellRatio = [2, 4, 3, 3];
 
-export default function CampaignJoined({ courseId }: { courseId: string }) {
+export default function CampaignJoined({ course }: { course: Course }) {
     const [loading, setLoading] = React.useState(true);
     const [joiningCampaign, setJoiningCampaign] = React.useState<CampaignFundraising[]>([]);
     const [campaignNotJoined, setCampaignNotJoined] = React.useState<Campaign[]>([]);
@@ -13,7 +25,7 @@ export default function CampaignJoined({ courseId }: { courseId: string }) {
 
     async function fetchData() {
         try {
-            const [joiningCampaign, allCampaign] = await Promise.all([getFundraisingInfoByProjectId(courseId), getCampaigns()]);
+            const [joiningCampaign, allCampaign] = await Promise.all([getFundraisingInfoByProjectId(course.address), getCampaigns()]);
             setJoiningCampaign(joiningCampaign);
             setCampaignNotJoined(allCampaign.filter((campaign) => !joiningCampaign.find((c) => c.campaignId === campaign.campaignId)));
         } catch (error) {
@@ -24,7 +36,7 @@ export default function CampaignJoined({ courseId }: { courseId: string }) {
 
     useEffect(() => {
         fetchData();
-    }, [courseId]);
+    }, [course.id]);
 
     if (loading) {
         return (
@@ -89,7 +101,7 @@ export default function CampaignJoined({ courseId }: { courseId: string }) {
                     <Grid key={campaign.campaignId + 'notjoined' + index} item xs={12} xsm={6}>
                         <CardCampaign data={campaign}>
                             <Box textAlign={'right'}>
-                                <Button variant="outlined" size="small" color='secondary' onClick={() => navigate(`/your-courses/${courseId}/join-campaign/${campaign.campaignId}`)}>
+                                <Button variant="outlined" size="small" color="secondary" onClick={() => navigate(`/your-courses/${course.id}/join-campaign/${campaign.campaignId}`)}>
                                     Join
                                 </Button>
                             </Box>

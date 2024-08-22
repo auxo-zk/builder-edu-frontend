@@ -1,4 +1,4 @@
-import { CardDraftCourse, deleteDraftCourse, DraftCourse, getDraftCourses, NoData } from '@auxo-dev/frontend-common';
+import { CardDraftCourse, deleteDraftCourse, DraftCourse, getDraftCourses, IconSpinLoading, NoData } from '@auxo-dev/frontend-common';
 import { Box, Grid } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -8,6 +8,7 @@ import { useAccount } from 'wagmi';
 export default function ListDrafts() {
     const { address } = useAccount();
     const [drafts, setDrafts] = useState<DraftCourse[]>([]);
+    const [loading, setLoading] = useState(true);
 
     async function fetchDrafts() {
         try {
@@ -17,6 +18,7 @@ export default function ListDrafts() {
             console.log(error);
             setDrafts([]);
         }
+        setLoading(false);
     }
     async function deleteCourse(draft: DraftCourse) {
         try {
@@ -33,6 +35,13 @@ export default function ListDrafts() {
     useEffect(() => {
         fetchDrafts();
     }, []);
+    if (loading) {
+        return (
+            <Box>
+                <IconSpinLoading sx={{ fontSize: '100px' }} />
+            </Box>
+        );
+    }
     return (
         <Box>
             <Box textAlign={'center'}>{drafts.length === 0 && <NoData />}</Box>
