@@ -85,7 +85,7 @@ export default function ScopeOfWork({ scopeOfWorks, setMilestonData, token }: Pr
                                     })
                                 }
                             />
-                            <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', mt: 3 }}>
+                            <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', mt: 3, flexWrap: 'wrap', gap: 2.5 }}>
                                 <Box>
                                     <Typography variant="body1" fontWeight={600}>
                                         Raising Amount
@@ -104,12 +104,12 @@ export default function ScopeOfWork({ scopeOfWorks, setMilestonData, token }: Pr
                                         InputProps={{
                                             endAdornment: token.symbol,
                                         }}
-                                        sx={{ mr: 1 }}
+                                        sx={{ mr: 1, background: 'white', borderRadius: '8px' }}
                                     />
                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                         <DateTimePicker
                                             label="Deadline"
-                                            sx={{ ml: 1 }}
+                                            sx={{ ml: 1, background: 'white', borderRadius: '8px' }}
                                             onChange={(value: Dayjs | null, _: any) => {
                                                 editScopeOfWork(index, { deadline: value?.toDate().toISOString() || '' });
                                             }}

@@ -15,7 +15,7 @@ import { Box, Button, Grid, Typography } from '@mui/material';
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const tableCellRatio = [2, 4, 3, 3];
+const tableCellRatio = [1, 3, 2, 3, 3];
 
 export default function CampaignJoined({ course }: { course: Course }) {
     const [loading, setLoading] = React.useState(true);
@@ -51,11 +51,11 @@ export default function CampaignJoined({ course }: { course: Course }) {
                 Joined Campaign
             </Typography>
 
-            <TableWrapper>
+            <TableWrapper sx={{ overflow: 'auto' }}>
                 <TableHeader sx={{ minWidth: '900px' }}>
                     <TableCell xs={tableCellRatio[0]}>
                         <Typography variant="body2" color={'text.secondary'}>
-                            Campaign ID
+                            ID
                         </Typography>
                     </TableCell>
                     <TableCell xs={tableCellRatio[1]}>
@@ -73,6 +73,11 @@ export default function CampaignJoined({ course }: { course: Course }) {
                             Target Amount
                         </Typography>
                     </TableCell>
+                    <TableCell xs={tableCellRatio[4]}>
+                        <Typography variant="body2" color={'text.secondary'}>
+                            Funded Amount
+                        </Typography>
+                    </TableCell>
                 </TableHeader>
 
                 {joiningCampaign.map((campaign, index) => (
@@ -88,6 +93,9 @@ export default function CampaignJoined({ course }: { course: Course }) {
                         </TableCell>
                         <TableCell xs={tableCellRatio[3]}>
                             <Typography>{campaign.targetAmount}</Typography>
+                        </TableCell>
+                        <TableCell xs={tableCellRatio[4]}>
+                            <Typography>{campaign.fundedAmount}</Typography>
                         </TableCell>
                     </TableRow>
                 ))}
