@@ -1,4 +1,5 @@
 import {
+    ButtonLoading,
     Campaign,
     CampaignFundraising,
     CardCampaign,
@@ -14,8 +15,10 @@ import {
 import { Box, Button, Grid, Typography } from '@mui/material';
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ButtonShareRevenue from './ButtonShareRevenue/ButtonShareRevenue';
+import ButtonVesting from './ButtonVesting/ButtonVesting';
 
-const tableCellRatio = [1, 3, 2, 3, 3];
+const tableCellRatio = [0.5, 2.5, 2, 2, 2, 3];
 
 export default function CampaignJoined({ course }: { course: Course }) {
     const [loading, setLoading] = React.useState(true);
@@ -78,6 +81,11 @@ export default function CampaignJoined({ course }: { course: Course }) {
                             Funded Amount
                         </Typography>
                     </TableCell>
+                    <TableCell xs={tableCellRatio[5]}>
+                        <Typography variant="body2" color={'text.secondary'}>
+                            Action
+                        </Typography>
+                    </TableCell>
                 </TableHeader>
 
                 {joiningCampaign.map((campaign, index) => (
@@ -95,7 +103,15 @@ export default function CampaignJoined({ course }: { course: Course }) {
                             <Typography>{campaign.targetAmount}</Typography>
                         </TableCell>
                         <TableCell xs={tableCellRatio[4]}>
-                            <Typography>{campaign.fundedAmount}</Typography>
+                            <Typography>
+                                {campaign.fundedAmount} {campaign.tokenFunding.symbol}
+                            </Typography>
+                        </TableCell>
+                        <TableCell xs={tableCellRatio[5]}>
+                            <Box sx={{ display: 'flex', gap: 1 }}>
+                                <ButtonShareRevenue course={course} campaign={campaign} />
+                                <ButtonVesting course={course} campaign={campaign} />
+                            </Box>
                         </TableCell>
                     </TableRow>
                 ))}
