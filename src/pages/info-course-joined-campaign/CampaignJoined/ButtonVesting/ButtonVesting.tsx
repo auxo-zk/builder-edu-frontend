@@ -42,6 +42,19 @@ export default function ButtonVesting({ campaign, course }: { course: Course; ca
     );
 }
 
+function stringToBytes32(str: string) {
+    const utf8 = new TextEncoder().encode(str);
+    if (utf8.length > 32) {
+        throw new Error('String is too long to convert to bytes32');
+    }
+    const bytes = new Uint8Array(32);
+    bytes.set(utf8);
+    return ('0x' +
+        Array.from(bytes)
+            .map((b) => b.toString(16).padStart(2, '0'))
+            .join('')) as `0x${string}`;
+}
+
 function ModalVesting({ campaign, course }: { course: Course; campaign: CampaignFundraising }) {
     const [amount, setAmount] = React.useState('');
     const [loading, setLoading] = React.useState(false);
@@ -102,7 +115,7 @@ function ModalVesting({ campaign, course }: { course: Course; campaign: Campaign
                     dataCreateVesting.targets as Address[],
                     dataCreateVesting.values.map((item) => BigInt(item)),
                     dataCreateVesting.calldatas as Address[],
-                    '0x000000000000000000000000000000000000000000000000000000000000000',
+                    stringToBytes32(Number(amount) * 10 ** campaign.tokenFunding.decimals + ''),
                     BigInt(Math.floor(Date.now() / 1000)),
                     BigInt(2592000),
                 ],
