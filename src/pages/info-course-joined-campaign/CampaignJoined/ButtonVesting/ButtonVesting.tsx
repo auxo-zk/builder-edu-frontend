@@ -31,7 +31,7 @@ export default function ButtonVesting({ campaign, course }: { course: Course; ca
             size="small"
             onClick={() =>
                 openModal({
-                    title: 'Share Revenue',
+                    title: 'Vesting',
                     content: <ModalVesting course={course} campaign={campaign} />,
                     modalProps: { maxWidth: 'xs' },
                 })
@@ -146,7 +146,7 @@ function ModalVesting({ campaign, course }: { course: Course; campaign: Campaign
             />
 
             <ButtonLoading muiProps={{ variant: 'contained', onClick: handleClick, sx: { mt: 3 }, fullWidth: true }} isLoading={loading}>
-                Share Revenue
+                Vesting
             </ButtonLoading>
         </Box>
     );

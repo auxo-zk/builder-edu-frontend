@@ -2,11 +2,13 @@ import {
     ButtonLoading,
     Campaign,
     CampaignFundraising,
+    CampaignState,
     CardCampaign,
     Course,
     getCampaigns,
     getFundraisingInfoByProjectId,
     IconSpinLoading,
+    StateCampaign,
     TableCell,
     TableHeader,
     TableRow,
@@ -30,7 +32,7 @@ export default function CampaignJoined({ course }: { course: Course }) {
         try {
             const [joiningCampaign, allCampaign] = await Promise.all([getFundraisingInfoByProjectId(course.address), getCampaigns()]);
             setJoiningCampaign(joiningCampaign);
-            setCampaignNotJoined(allCampaign.filter((campaign) => !joiningCampaign.find((c) => c.campaignId === campaign.campaignId)));
+            setCampaignNotJoined(allCampaign.filter((campaign) => !joiningCampaign.find((c) => c.campaignId === campaign.campaignId && campaign.state == CampaignState.APPLICATION)));
         } catch (error) {
             console.error(error);
         }
@@ -97,10 +99,14 @@ export default function CampaignJoined({ course }: { course: Course }) {
                             <Typography>{campaign.campaignName}</Typography>
                         </TableCell>
                         <TableCell xs={tableCellRatio[2]}>
-                            <Typography>{campaign.campaignState}</Typography>
+                            <Typography>
+                                <StateCampaign state={campaign.campaignState} />
+                            </Typography>
                         </TableCell>
                         <TableCell xs={tableCellRatio[3]}>
-                            <Typography>{campaign.targetAmount}</Typography>
+                            <Typography>
+                                {campaign.targetAmount} {campaign.tokenFunding.symbol}
+                            </Typography>
                         </TableCell>
                         <TableCell xs={tableCellRatio[4]}>
                             <Typography>
