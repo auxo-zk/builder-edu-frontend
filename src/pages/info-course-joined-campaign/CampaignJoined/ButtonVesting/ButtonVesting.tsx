@@ -117,7 +117,7 @@ function ModalVesting({ campaign, course }: { course: Course; campaign: Campaign
                     dataCreateVesting.calldatas as Address[],
                     stringToBytes32(Number(amount) * 10 ** campaign.tokenFunding.decimals + ''),
                     BigInt(Math.floor(Date.now() / 1000)),
-                    BigInt(2592000),
+                    BigInt(15*60), // 15m
                 ],
             });
             await waitForTransactionReceipt(config.getClient(), { hash: tx2 });
